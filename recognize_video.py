@@ -5,8 +5,10 @@ import imutils
 import time
 import pickle
 import numpy as np
+import pandas as pd
 from imutils.video import FPS
 from imutils.video import VideoStream
+from datetime import date,datetime
 
 # load serialized face detector
 print("Loading Face Detector...")
@@ -19,7 +21,7 @@ print("Loading Face Recognizer...")
 embedder = cv2.dnn.readNetFromTorch("openface_nn4.small2.v1.t7")
 
 # load the actual face recognition model along with the label encoder
-recognizer = pickle.loads(open("output/recognizer.pickle", "rb").read())
+recognizer = pickle.loads(open("output/recognizer", "rb").read())
 le = pickle.loads(open("output/le.pickle", "rb").read())
 
 # initialize the video stream, then allow the camera sensor to warm up
@@ -30,6 +32,7 @@ time.sleep(2.0)
 # start the FPS throughput estimator
 fps = FPS().start()
 
+todaydate=date.today().strftime("%m_%d_%y")
 # loop over frames from the video file stream
 while True:
 	# grab the frame from the threaded video stream
@@ -47,7 +50,11 @@ while True:
 	# apply OpenCV's deep learning-based face detector to localize faces in the input image
 	detector.setInput(imageBlob)
 	detections = detector.forward()
-
+	attendance=f'Attendance/Attendance-{todaydate}.csv'
+	x = attendance.split('/')[-1]
+	if x not in os.listdir('Attendance'):
+		with open(attendance,'w') as f:
+			f.write('Name,Roll,Time')
 	# loop over the detections
 	for i in range(0, detections.shape[2]):
 		# extract the confidence (i.e., probability) associated with the prediction
@@ -80,7 +87,18 @@ while True:
 			name = le.classes_[j]
 
 			# draw the bounding box of the face along with the associated probability
-			text = "{}: {:.2f}%".format(name, proba * 100)
+			# text = "{}: {:.2f}%".format(name, proba * 100)
+			text =" "
+			if proba > 0.85:
+				text = name
+				username = name
+				curtime = datetime.now().strftime("%H:%M:%S")
+
+				df=pd.read_csv(attendance)
+				if username not in list(df['Name']):
+					with open(attendance,'a') as f:
+						f.write(f'\n{username},{curtime}')
+
 			y = startY - 10 if startY - 10 > 10 else startY + 10
 			cv2.rectangle(frame, (startX, startY), (endX, endY),
 				(0, 0, 255), 2)

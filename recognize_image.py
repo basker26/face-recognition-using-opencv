@@ -9,8 +9,9 @@ import cv2
 import os
 
 # construct the argument parser and parse the arguments
+#"D:/Internship/face-recognition-using-opencv/dataset/modi/00039.png"
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--image", required=True, help="input image path")
+ap.add_argument("-i", "--image", help="input image path",default="D:/Internship/face-recognition-using-opencv/dataset/modi/00039.png")
 args = vars(ap.parse_args())
 
 # load our serialized face detector from disk
@@ -24,7 +25,7 @@ print("Loading Face Recognizer...")
 embedder = cv2.dnn.readNetFromTorch('openface_nn4.small2.v1.t7')
 
 # load the actual face recognition model along with the label encoder
-recognizer = pickle.loads(open('output/recognizer.pickle', "rb").read())
+recognizer = pickle.loads(open('output/recognizer', "rb").read())
 le = pickle.loads(open('output/le.pickle', "rb").read())
 
 # load the image, resize it to have a width of 600 pixels (while maintaining the aspect ratio), and then grab the image dimensions

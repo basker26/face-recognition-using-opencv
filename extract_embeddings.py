@@ -1,4 +1,11 @@
-# import libraries
+# # import libraries
+# from imutils import paths
+# import numpy as np
+# import argparse
+# import imutils
+# import pickle
+# import cv2
+# import os
 from imutils import paths
 import numpy as np
 import argparse
@@ -6,7 +13,6 @@ import imutils
 import pickle
 import cv2
 import os
-
 # load serialized face detector
 print("Loading Face Detector...")
 protoPath = "face_detection_model/deploy.prototxt"
